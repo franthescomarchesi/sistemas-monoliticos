@@ -1,14 +1,20 @@
+import { Umzug } from "umzug"
 import ProductModel from "../../../../store-catalog/repository/product.model"
-import { app, migration, sequelize } from "../../express"
+import { app, sequelize } from "../../express"
 import request from "supertest"
+import { migrator } from "../../../../../test-migrations/config-migrations/migrator"
 
 describe("E2E test for checkout", () => {
 
+    let migration: Umzug<any>
+
     beforeEach(async () => {
+        migration = migrator(sequelize)
         await migration.up()
     })
 
     afterAll(async () => {
+        migration = migrator(sequelize)
         await migration.down()
         await sequelize.close()
     })
@@ -77,7 +83,6 @@ describe("E2E test for checkout", () => {
         expect(responseCheckout.body.products.length).toBe(2)
         expect(responseCheckout.body.products[0].productId).toBe(inputOrder.products[0].productId)
         expect(responseCheckout.body.products[1].productId).toBe(inputOrder.products[1].productId)
-        console.log("Test should create a checkout")
     })
 
 })

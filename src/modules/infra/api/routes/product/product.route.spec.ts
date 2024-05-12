@@ -1,13 +1,19 @@
-import { app, migration, sequelize } from "../../express"
+import { Umzug } from "umzug"
+import { app, sequelize } from "../../express"
 import request from "supertest"
+import { migrator } from "../../../../../test-migrations/config-migrations/migrator"
 
 describe("E2E test for product", () => {
 
+    let migration: Umzug<any>
+
     beforeEach(async () => {
+        migration = migrator(sequelize)
         await migration.up()
     })
 
     afterAll(async () => {
+        migration = migrator(sequelize)
         await migration.down()
         await sequelize.close()
     })
@@ -28,7 +34,6 @@ describe("E2E test for product", () => {
         expect(response.body.description).toBe(input.description)
         expect(response.body.purchasePrice).toBe(input.purchasePrice)
         expect(response.body.stock).toBe(input.stock)
-        console.log("Test should create a product")
     })
 
 })
