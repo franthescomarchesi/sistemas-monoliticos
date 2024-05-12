@@ -1,13 +1,15 @@
-import { app, sequelize } from "../../express"
+import ProductModel from "../../../../store-catalog/repository/product.model"
+import { app, migration, sequelize } from "../../express"
 import request from "supertest"
 
 describe("E2E test for checkout", () => {
 
     beforeEach(async () => {
-        await sequelize.sync({force: true})
+        await migration.up()
     })
 
     afterAll(async () => {
+        await migration.down()
         await sequelize.close()
     })
 
@@ -52,15 +54,30 @@ describe("E2E test for checkout", () => {
                 productId: responseProduct02.body.id
             }]
         }
+        const product01 = await ProductModel.findOne({
+            where: {
+                id: responseProduct01.body.id
+            }
+        })
+        product01.salesPrice = 50
+        await product01.save()
+        const product02 = await ProductModel.findOne({
+            where: {
+                id: responseProduct02.body.id
+            }
+        })
+        product02.salesPrice = 100
+        await product02.save()
         const responseCheckout = await request(app)
             .post("/checkout")
             .send(inputOrder)
         expect(responseCheckout.body.id).toBeDefined()
         expect(responseCheckout.body.status).toBe("approved")
-        expect(responseCheckout.body.total).toBe(inputProduct01.purchasePrice + inputProduct02.purchasePrice)
+        expect(responseCheckout.body.total).toBe(product01.salesPrice + product02.salesPrice)
         expect(responseCheckout.body.products.length).toBe(2)
-        expect(responseCheckout.body.products[0].length).toBe(responseProduct01.body.id)
-        expect(responseCheckout.body.products[1].length).toBe(responseProduct02.body.id)
+        expect(responseCheckout.body.products[0].productId).toBe(inputOrder.products[0].productId)
+        expect(responseCheckout.body.products[1].productId).toBe(inputOrder.products[1].productId)
+        console.log("Test should create a checkout")
     })
 
 })

@@ -13,6 +13,8 @@ import ClientCheckoutModel from "../../checkout/repository/client.model"
 import ProductAdmModel from "../../product-adm/repository/product.model"
 import ProductStoreCatalogModel from "../../store-catalog/repository/product.model"
 import ProductCheckoutModel from "../../checkout/repository/product.model"
+import { Umzug } from "umzug"
+import { migrator } from "../../../test-migrations/config-migrations/migrator"
 
 
 export const app: Express = express()
@@ -23,6 +25,7 @@ app.use("/checkout", checkoutRoute)
 app.use("/invoice", invoiceRoute)
 
 export let sequelize: Sequelize
+export let migration: Umzug<any>
 
 async function setupDb() {
     sequelize = new Sequelize({
@@ -41,7 +44,8 @@ async function setupDb() {
         ProductCheckoutModel,
         OrderModel
     ])
-    await sequelize.sync()
+    migration = migrator(sequelize)
+    await migration.up()
 }
 
 setupDb()

@@ -1,13 +1,14 @@
-import { app, sequelize } from "../../express"
+import { app, migration, sequelize } from "../../express"
 import request from "supertest"
 
 describe("E2E test for product", () => {
 
     beforeEach(async () => {
-        await sequelize.sync({force: true})
+        await migration.up()
     })
 
     afterAll(async () => {
+        await migration.down()
         await sequelize.close()
     })
 
@@ -27,6 +28,7 @@ describe("E2E test for product", () => {
         expect(response.body.description).toBe(input.description)
         expect(response.body.purchasePrice).toBe(input.purchasePrice)
         expect(response.body.stock).toBe(input.stock)
+        console.log("Test should create a product")
     })
 
 })

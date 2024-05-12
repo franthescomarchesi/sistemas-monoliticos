@@ -1,4 +1,4 @@
-import UsecaseInterface from "../../../@shared/domain/usecase/usecase.interface";
+import UseCaseInterface from "../../../@shared/domain/usecase/usecase.interface";
 import Id from "../../../@shared/domain/value-object/id.value-object";
 import ClientAdmFacadeInterface from "../../../client-adm/facade/client-adm.facade.interface";
 import InvoiceFacadeInterface from "../../../invoice/facade/invoice.facade.interface";
@@ -11,7 +11,7 @@ import Product from "../../domain/product.entity";
 import CheckoutGateway from "../../gateway/checkout.gateway";
 import { PlaceOrderInputDTO, PlaceOrderOutputDTO } from "./place-order.dto";
 
-export default class PlaceOrderUsecase implements UsecaseInterface {
+export default class PlaceOrderUseCase implements UseCaseInterface {
 
     private _clientFacade: ClientAdmFacadeInterface
     private _productFacade: ProductAdmFacadaInterface
